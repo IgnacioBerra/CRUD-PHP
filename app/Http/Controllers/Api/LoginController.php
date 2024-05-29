@@ -12,78 +12,79 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $logins = Login::paginate();
-
-        return LoginResource::collection($logins);
-    }
+    
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new user
      */
     public function store(LoginRequest $request)
-{
+    {
 
-    $validatedData = $request->validated();
-    print($validatedData['email']);
-    print($validatedData['password']);
+        $validatedData = $request->validated();
+        print($validatedData['email']);
+        print($validatedData['password']);
 
-    return Login::create([
-        'email' => $validatedData['email'],
-        'password' => $validatedData['password'], 
-    ]);
-}
+        return Login::create([
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'], 
+        ]);
+    }   
 
     /**
      * Handle a login request.
      */
     public function login(LoginRequest $request)
-{
-    $validatedData = $request->validated();
-
-    $user = Login::where('email', $request->email)->first();
-
-    if ($user && $user->password === $request->password) {
-        return response()->json(['message' => 'Exito'], 200);
-    } else {
-        return response()->json(['message' => 'Credencial incorrecta. Compruebe correo y contraseña nuevamente.'], 401);
-    }
-}
-    /**
-     * Display the specified resource.
-     */
-    public function show(Login $login): Login
     {
-        return $login;
+        $validatedData = $request->validated();
+
+        $user = Login::where('email', $request->email)->first();
+
+        if ($user && $user->password === $request->password) {
+            return response()->json(['message' => 'Exito'], 200);
+        } else {
+            return response()->json(['message' => 'Credencial incorrecta. Compruebe correo y contraseña nuevamente.'], 401);
+        }
     }
+    
 
     /**
-     * Update the specified resource in storage.
+     * User's password update
      */
-    public function update(LoginRequest $request, Login $login): Login
+    public function update(Request $request)
     {
-        $login->update($request->validated());
+        $request->validate([
+             'email' => 'required|string',
+             'password' => 'required|string',
+             'newPassword' => 'required|string'
+        ]);
 
-        return $login;
+        $user = Login::where('email', $request->email)->first();
+
+        if ($user && $user->password === $request->password)
+        {
+
+            $user->password = $request->newPassword;
+            $user->save();
+            return response()->json(['message' => 'Contraseña actualizada correctamente'], 200);}
+
+            else{
+
+            return response()->json(['message' => 'Credencial incorrecta. Compruebe correo y contraseña nuevamente.'], 401);
+        }
+      
     }
 
-    public function destroy(Login $login): Response
-    {
-        $login->delete();
-
-        return response()->noContent();
-    }
-
-    public function deleteByEmail(Request $request)
+    
+    /**
+     * Delete an user. 
+     */
+    public function destroy(Request $request)
     {
         $request->validate([
             'email' => 'required|string',
         ]);
-        printf($request->email);
+
+
         $user = Login::where('email', $request->email)->first();
 
         if ($user) {

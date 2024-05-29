@@ -19,5 +19,5 @@ Route::get('/', function () {
 
 Route::post('/register', [LoginController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/update', [LoginController::class, 'update']);
-Route::delete('/delete', [LoginController::class, 'deleteByEmail']);
+Route::put('/update', [LoginController::class, 'update']);
+Route::delete('/delete', [LoginController::class, 'delete']);

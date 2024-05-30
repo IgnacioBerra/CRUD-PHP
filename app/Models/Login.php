@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Model;
 class Login extends Model
 {
     
-    protected $perPage = 20;
     protected $table = 'logins';
     /**
      * The attributes that are mass assignable.
